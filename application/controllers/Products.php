@@ -3,12 +3,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends CI_Controller
 {
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
-        $this->load->model('Product_model');
-        $this->load->helper('url');
-        $this->load->library('form_validation');
+        $this->load->model('Product_model', 'model');
     }
 
     public function index()
@@ -16,77 +14,33 @@ class Products extends CI_Controller
         $this->load->view('v_products');
     }
 
-    public function ajax_list()
+    public function list()
     {
-        $keyword = $this->input->get('keyword');
-        $page = $this->input->get('page') ? (int)$this->input->get('page') : 1;
-        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 8;
-        
-        $offset = ($page - 1) * $limit;
-
-        $products = $this->Product_model->get_paginated_products($keyword, $limit, $offset);
-        $total_items = $this->Product_model->count_all_products($keyword);
-
-        $response = [
-            'status' => true,
-            'products' => $products,
-            'total_items' => $total_items,
-            'current_page' => $page,
-            'limit' => $limit
-        ];
-
-        $this->_json_output($response);
-    }
-    
-    public function ajax_get($id)
-    {
-        $data = $this->Product_model->get_product_by_id($id);
-        $this->_json_output($data);
+        $data = $this->model->list();
+        echo json_encode($data);
     }
 
-    public function ajax_add()
+    public function get()
     {
-        $hasilTambah = $this->Product_model->tambah_produk($this->input->post());
-        if ($hasilTambah) {
-            $this->_json_output(['status' => TRUE]);
-        } else {
-            $this->_json_output(['status' => FALSE, 'message' => 'Gagal menyimpan data.']);
-        }
+        $data = $this->model->get();
+        echo json_encode($data);
     }
 
-    public function ajax_update()
+    public function tambah()
     {
-        $id = $this->input->post('id');
-        $postData = $this->input->post();
-        $fileData = $_FILES;
-
-        $hasilUpdate = $this->Product_model->update_produk($id, $postData, $fileData);
-
-        if (is_array($hasilUpdate) && isset($hasilUpdate['errors'])) {
-            $this->output->set_status_header(400);
-            $this->_json_output($hasilUpdate);
-        } else if ($hasilUpdate === TRUE) {
-            $this->_json_output(['status' => TRUE, 'message' => 'Produk berhasil diperbarui']);
-        } else {
-            $this->output->set_status_header(500);
-            $this->_json_output(['status' => FALSE, 'message' => 'Gagal memperbarui produk']);
-        }
+        $data = $this->model->tambah();
+        echo json_encode($data);
     }
 
-    public function ajax_delete($id)
+    public function edit()
     {
-        $hasilHapus = $this->Product_model->hapus_produk($id);
-        if ($hasilHapus) {
-            $this->_json_output(['status' => TRUE]);
-        } else {
-            $this->_json_output(['status' => FALSE, 'message' => 'Gagal menghapus data.']);
-        }
+        $data = $this->model->edit();
+        echo json_encode($data);
     }
 
-    private function _json_output($data)
+    public function hapus()
     {
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($data));
+        $data = $this->model->hapus();
+        echo json_encode($data);
     }
 }
