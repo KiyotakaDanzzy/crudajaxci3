@@ -3,14 +3,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends CI_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->load->model('Product_model');
         $this->load->helper('url');
         $this->load->library('form_validation');
-        $this->load->library('pagination');
     }
 
     public function index()
@@ -18,13 +16,28 @@ class Products extends CI_Controller
         $this->load->view('v_products');
     }
 
-    public function ajax_search()
+    public function ajax_list()
     {
-        $kata = $this->input->get('keyword');
-        $data['products'] = $this->Product_model->ambil_semua_produk($kata);
-        $this->load->view('ajax_product_cards', $data);
-    }
+        $keyword = $this->input->get('keyword');
+        $page = $this->input->get('page') ? (int)$this->input->get('page') : 1;
+        $limit = $this->input->get('limit') ? (int)$this->input->get('limit') : 8;
+        
+        $offset = ($page - 1) * $limit;
 
+        $products = $this->Product_model->get_paginated_products($keyword, $limit, $offset);
+        $total_items = $this->Product_model->count_all_products($keyword);
+
+        $response = [
+            'status' => true,
+            'products' => $products,
+            'total_items' => $total_items,
+            'current_page' => $page,
+            'limit' => $limit
+        ];
+
+        $this->_json_output($response);
+    }
+    
     public function ajax_get($id)
     {
         $data = $this->Product_model->get_product_by_id($id);
@@ -49,20 +62,14 @@ class Products extends CI_Controller
 
         $hasilUpdate = $this->Product_model->update_produk($id, $postData, $fileData);
 
-        if (is_array($hasilUpdate)) {
+        if (is_array($hasilUpdate) && isset($hasilUpdate['errors'])) {
             $this->output->set_status_header(400);
             $this->_json_output($hasilUpdate);
         } else if ($hasilUpdate === TRUE) {
-            $this->_json_output([
-                'status' => TRUE,
-                'message' => 'Produk berhasil diperbarui'
-            ]);
+            $this->_json_output(['status' => TRUE, 'message' => 'Produk berhasil diperbarui']);
         } else {
             $this->output->set_status_header(500);
-            $this->_json_output([
-                'status' => FALSE,
-                'message' => 'Gagal memperbarui produk'
-            ]);
+            $this->_json_output(['status' => FALSE, 'message' => 'Gagal memperbarui produk']);
         }
     }
 
@@ -73,22 +80,6 @@ class Products extends CI_Controller
             $this->_json_output(['status' => TRUE]);
         } else {
             $this->_json_output(['status' => FALSE, 'message' => 'Gagal menghapus data.']);
-        }
-    }
-
-    private function _validate()
-    {
-        $this->form_validation->set_rules('name', 'Nama Produk', 'trim|required|max_length[100]');
-        $this->form_validation->set_rules('price', 'Harga', 'trim|required|numeric');
-
-        if ($this->form_validation->run() == FALSE) {
-            $errors = [
-                'name'  => form_error('name'),
-                'price' => form_error('price'),
-            ];
-            $this->output->set_status_header(400);
-            $this->_json_output(['status' => FALSE, 'errors' => $errors]);
-            exit();
         }
     }
 
