@@ -5,16 +5,16 @@ class Product_model extends CI_Model
 
     public function list()
     {
-        $keyword = $this->input->get('keyword');
+        $kataKunci = $this->input->get('kataKunci');
         $page = (int) $this->input->get('page') ?: 1;
         $limit = (int) $this->input->get('limit') ?: 8;
         $offset = ($page - 1) * $limit;
 
         $this->db->from($this->table);
-        if (!empty($keyword)) {
+        if (!empty($kataKunci)) {
             $this->db->group_start();
-            $this->db->like('name', $keyword);
-            $this->db->or_like('description', $keyword);
+            $this->db->like('name', $kataKunci);
+            // $this->db->or_like('description', $kataKunci);
             $this->db->group_end();
         }
         $this->db->order_by('id', 'DESC');
@@ -22,10 +22,10 @@ class Product_model extends CI_Model
         $products = $this->db->get()->result();
 
         $this->db->from($this->table);
-        if (!empty($keyword)) {
+        if (!empty($kataKunci)) {
             $this->db->group_start();
-            $this->db->like('name', $keyword);
-            $this->db->or_like('description', $keyword);
+            $this->db->like('name', $kataKunci);
+            $this->db->or_like('description', $kataKunci);
             $this->db->group_end();
         }
         $total_items = $this->db->count_all_results();

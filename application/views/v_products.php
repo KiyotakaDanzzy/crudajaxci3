@@ -81,7 +81,7 @@
             display: block;
         }
 
-        #image-preview {
+        #preview-gambar {
             width: 100%;
             max-width: 200px;
             height: auto;
@@ -100,6 +100,7 @@
         .pagination .page-item.active a {
             background-color: #4e73df;
             border-color: #4e73df;
+            color: white;
         }
 
         .pagination .page-link {
@@ -153,7 +154,7 @@
                                 <div class="mb-3"><label for="description" class="form-label fw-bold">Deskripsi</label><textarea id="description" name="description" class="form-control" rows="5"></textarea></div>
                             </div>
                             <div class="col-md-5">
-                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk</label><input type="file" id="image" name="image" class="form-control" onchange="previewImage()"><img id="image-preview" src="#" alt="Image Preview" class="img-fluid d-none"></div>
+                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk</label><input type="file" id="image" name="image" class="form-control" onchange="previewGambar()"><img id="preview-gambar" src="#" alt="Image Preview" class="img-fluid d-none"></div>
                             </div>
                         </div>
                     </form>
@@ -171,236 +172,210 @@
     <script src="<?php echo base_url('style/js/pagination.js'); ?>"></script>
 
     <script>
-        const BASE_URL = "<?php echo base_url(); ?>";
-        const UPLOADS_URL = `${BASE_URL}uploads/products/`;
-        const ITEMS_PER_PAGE = 8;
-
-        let searchTimer;
-        let paginationInstance = null;
-        let currentKeyword = '';
-        let activePage = 1;
+        const base = "<?= base_url() ?>";
+        const folderGambar = base + "uploads/products/";
+        const perHalaman = 8;
+        let halaman = 1;
+        let kata = "";
 
         $(document).ready(function() {
-            loadProducts(1);
-
-            $('#search-input').on('input', function() {
-                clearTimeout(searchTimer);
-                currentKeyword = $(this).val();
-                searchTimer = setTimeout(() => {
-                    loadProducts(1);
-                }, 300);
-            });
-
-            $(document).on('click', '.btn-add', function() {
-                clearForm();
-                $('#modal-title').text('Tambah Produk Baru');
-                $('#product-modal').modal('show');
-            });
-
-            $(document).on('click', '.btn-edit', function() {
-                const id = $(this).data('id');
-                clearForm();
-                $.post(`${BASE_URL}products/get`, {
-                    id
-                }, function(data) {
-                    $('[name="id"]').val(data.id);
-                    $('[name="name"]').val(data.name);
-                    $('[name="description"]').val(data.description);
-                    $('[name="price"]').val(data.price);
-                    if (data.image) {
-                        $('#image-preview').attr('src', UPLOADS_URL + data.image).removeClass('d-none');
-                    }
-                    $('#modal-title').text('Edit Produk');
-                    $('#product-modal').modal('show');
-                }, "json");
-            });
-
-            $(document).on('click', '.btn-delete', function() {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Yakin?',
-                    text: "Data produk ini akan dihapus",
-                    icon: 'warning',
-                    draggable: true,
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.post(`${BASE_URL}products/hapus`, {
-                            id
-                        }, function(data) {
-                            if (data.status) {
-                                showAlert('success', 'Dihapus', 'Data produk telah dihapus.');
-                                reloadCurrentPage();
-                            } else {
-                                showAlert('error', 'Gagal', data.message || 'Gagal menghapus data.');
-                            }
-                        }, "json");
-                    }
-                });
-            });
-
+            produk();
             $('#btn-save').click(function() {
                 $('.is-invalid').removeClass('is-invalid');
                 $('.invalid-feedback').text('');
 
-                const name = $('[name="name"]').val().trim();
-                const price = $('[name="price"]').val().trim();
-                const description = $('[name="description"]').val().trim();
+                let nama = $('[name="name"]').val().trim();
+                let harga = $('[name="price"]').val().trim();
+                let error = false;
 
-                let hasError = false;
-
-                if (!name) {
-                    $('#name-error').text('Nama produk tidak boleh kosong.');
+                if (nama == '') {
+                    $('#name-error').text('Nama produk tidak boleh kosong');
                     $('[name="name"]').addClass('is-invalid');
-                    hasError = true;
+                    error = true;
                 }
-                if (!price || isNaN(price) || parseFloat(price) <= 0) {
-                    $('#price-error').text('Harga harus lebih dari 0.');
+
+                if (harga == '' || isNaN(harga) || parseFloat(harga) <= 0) {
+                    $('#price-error').text('Harga harus lebih dari 0');
                     $('[name="price"]').addClass('is-invalid');
-                    hasError = true;
+                    error = true;
                 }
 
-                if (hasError) return;
+                if (error) return;
 
-                const id = $('[name="id"]').val();
-                const url = (id === '') ? `${BASE_URL}products/tambah` : `${BASE_URL}products/edit`;
-                const formData = new FormData($('#product-form')[0]);
+                let url = $('[name="id"]').val() == '' ? base + "products/tambah" : base + "products/edit";
+                let data = new FormData($('#product-form')[0]);
 
                 $.ajax({
                     url: url,
                     type: "POST",
-                    data: formData,
+                    data: data,
                     contentType: false,
                     processData: false,
                     dataType: "JSON",
-                    success: function(data) {
-                        if (data.status) {
+                    success: function(res) {
+                        if (res.status) {
                             $('#product-modal').modal('hide');
-                            showAlert('success', 'Berhasil', 'Produk berhasil disimpan');
-                            loadProducts(id ? activePage : 1);
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Data berhasil disimpan',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            halaman = 1;
+                            window.pagin = null;
+                            produk();
                         }
                     },
                     error: function(jqXHR) {
                         if (jqXHR.responseJSON && jqXHR.responseJSON.errors) {
-                            const errors = jqXHR.responseJSON.errors;
-                            for (const key in errors) {
-                                $(`[name="${key}"]`).addClass('is-invalid');
-                                $(`#${key}-error`).text(errors[key]);
+                            let x = jqXHR.responseJSON.errors;
+                            for (let k in x) {
+                                $('[name="' + k + '"]').addClass('is-invalid');
+                                $('#' + k + '-error').text(x[k]);
                             }
-                        } else {
-                            showAlert('error', 'Gagal', 'Terjadi kesalahan saat menyimpan produk');
                         }
                     }
                 });
             });
 
-        });
+            $('#search-input').on('keyup', function() {
+                kata = $(this).val();
+                halaman = 1;
+                window.pagin = null;
+                produk();
+            });
 
-        function loadProducts(page) {
-            activePage = page;
-            $('#product-list').html('<div class="col-12 text-center p-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
-            $.get(`${BASE_URL}products/list`, {
-                keyword: currentKeyword,
-                page,
-                limit: ITEMS_PER_PAGE
-            }, function(res) {
-                renderProductCards(res.products);
-                if (!paginationInstance || page === 1) {
-                    initializePagination(res.total_items, page);
-                }
-            }, "json");
-        }
+            $('.btn-add').click(function() {
+                $('#product-form')[0].reset();
+                $('[name="id"]').val('');
+                $('.is-invalid').removeClass('is-invalid');
+                $('.invalid-feedback').text('');
+                $('#preview-gambar').addClass('d-none').attr('src', '#');
+                $('#modal-title').text('Tambah Produk Baru');
+                $('#product-modal').modal('show');
+            });
 
-        function renderProductCards(products) {
-            const productList = $('#product-list').empty();
-            if (products.length > 0) {
-                products.forEach(product => {
-                    const price = 'Rp ' + new Intl.NumberFormat('id-ID').format(product.price);
-                    const image = product.image ? `<img src="${UPLOADS_URL + product.image}" class="card-img-top">` :
-                        `<div class="card-img-placeholder"><span>Tidak ada gambar</span></div>`;
-                    const card = `
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                            <div class="card h-100">
-                                ${image}
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title mb-1">${escapeHtml(product.name)}</h5>
-                                    <p class="card-text text-muted small flex-grow-1">${escapeHtml(product.description)}</p>
-                                    <p class="card-price mb-3">${price}</p>
-                                    <div class="mt-auto pt-2">
-                                        <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${product.id}"><i class="bi bi-pencil-square"></i> Edit</button>
-                                        <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${product.id}"><i class="bi bi-trash3"></i> Hapus</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-                    productList.append(card);
-                });
-            } else {
-                productList.html(`<div class="col-12"><div class="placeholder-card"><i class="bi bi-search display-4 text-muted"></i><h5 class="mt-3">Produk tidak ditemukan</h5><p class="text-muted">Tidak ada produk yang cocok dengan pencarian.</p></div></div>`);
-            }
-        }
-
-        function reloadCurrentPage() {
-            loadProducts(activePage);
-        }
-
-        function initializePagination(total, current) {
-            $('#pagination-container').empty();
-            paginationInstance = null;
-            if (total > ITEMS_PER_PAGE) {
-                paginationInstance = new Pagination('#pagination-container', {
-                    itemsCount: total,
-                    pageSize: ITEMS_PER_PAGE,
-                    currentPage: current,
-                    onPageChange: (data) => {
-                        if (data.currentPage !== activePage) {
-                            loadProducts(data.currentPage);
+            $('#product-list').on('click', '.btn-edit', function() {
+                let id = $(this).data('id');
+                $.ajax({
+                    url: base + "products/get",
+                    type: "POST",
+                    data: {
+                        id: id
+                    },
+                    dataType: "JSON",
+                    success: function(x) {
+                        $('#product-modal').modal('show');
+                        $('#modal-title').text("Edit Produk");
+                        $('[name="id"]').val(x.id);
+                        $('[name="name"]').val(x.name);
+                        $('[name="description"]').val(x.description);
+                        $('[name="price"]').val(x.price);
+                        if (x.image) {
+                            $('#preview-gambar').attr('src', folderGambar + x.image).removeClass('d-none');
                         }
                     }
                 });
-            }
-        }
+            });
 
-        function clearForm() {
-            $('#product-form')[0].reset();
-            $('[name="id"]').val('');
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').text('');
-            $('#image-preview').addClass('d-none').attr('src', '#');
-        }
+            $('#product-list').on('click', '.btn-hapus', function() {
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Yakin?',
+                    text: 'Data produk ini akan dihapus',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal'
+                }).then(function(r) {
+                    if (r.isConfirmed) {
+                        $.ajax({
+                            url: base + "products/hapus",
+                            type: "POST",
+                            data: {
+                                id: id
+                            },
+                            dataType: "JSON",
+                            success: function(res) {
+                                if (res.status) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil',
+                                        text: 'Data berhasil dihapus',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                    produk();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
 
-        function previewImage() {
-            const input = document.getElementById('image');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    $('#image-preview').attr('src', e.target.result).removeClass('d-none');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
+            $('#image').change(function() {
+                if (this.files && this.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#preview-gambar').attr('src', e.target.result).removeClass('d-none');
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
 
-        function escapeHtml(text) {
-            return text ? text.replace(/[&<>"']/g, (m) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            })[m]) : '';
-        }
-
-        function showAlert(icon, title, text) {
-            Swal.fire({
-                icon,
-                title,
-                text,
-                timer: 2000,
-                showConfirmButton: false
+        function produk() {
+            $.ajax({
+                url: base + "products/list",
+                type: "GET",
+                data: {
+                    kataKunci: kata,
+                    page: halaman,
+                    limit: perHalaman
+                },
+                dataType: "JSON",
+                success: function(res) {
+                    let html = '';
+                    let list = res.products;
+                    if (list.length == 0) {
+                        html = `<div class="col-12"><div class="placeholder-card"><i class="bi bi-search display-4 text-muted"></i><h5 class="mt-3">Produk tidak ada</h5><p class="text-muted">Tidak ada produk yang cocok</p></div></div>`;
+                    } else {
+                        for (let i = 0; i < list.length; i++) {
+                            let x = list[i];
+                            let img = x.image ? `<img src="${folderGambar + x.image}" class="card-img-top">` : `<div class="card-img-placeholder"><span>Tidak ada gambar</span></div>`;
+                            html += `
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                        <div class="card h-100">
+                            ${img}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title mb-1">${x.name}</h5>
+                                <p class="card-text text-muted small flex-grow-1">${x.description}</p>
+                                <p class="card-price mb-3">Rp ${parseInt(x.price).toLocaleString('id-ID')}</p>
+                                <div class="mt-auto pt-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm btn-edit" data-id="${x.id}"><i class="bi bi-pencil-square"></i> Edit</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-hapus" data-id="${x.id}"><i class="bi bi-trash3"></i> Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                        }
+                    }
+                    $('#product-list').html(html);
+                    if (!window.pagin) {
+                        window.pagin = new Pagination('#pagination-container', {
+                            itemsCount: res.total_items,
+                            pageSize: perHalaman,
+                            currentPage: halaman,
+                            onPageChange: function(data) {
+                                halaman = data.currentPage;
+                                produk();
+                            }
+                        });
+                    }
+                }
             });
         }
     </script>
