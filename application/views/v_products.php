@@ -333,8 +333,8 @@
                 type: "GET",
                 data: {
                     kataKunci: kata,
-                    page: halaman,
-                    limit: perHalaman
+                    page: 1,
+                    limit: 1000
                 },
                 dataType: "JSON",
                 success: function(res) {
@@ -342,12 +342,14 @@
                     let list = res.products;
                     if (list.length == 0) {
                         html = `<div class="col-12"><div class="placeholder-card"><i class="bi bi-search display-4 text-muted"></i><h5 class="mt-3">Produk tidak ada</h5><p class="text-muted">Tidak ada produk yang cocok</p></div></div>`;
+                        $('#product-list').html(html);
+                        $('#pagination-container').empty();
                     } else {
                         for (let i = 0; i < list.length; i++) {
                             let x = list[i];
                             let img = x.image ? `<img src="${folderGambar + x.image}" class="card-img-top">` : `<div class="card-img-placeholder"><span>Tidak ada gambar</span></div>`;
                             html += `
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 product-item">
                         <div class="card h-100">
                             ${img}
                             <div class="card-body d-flex flex-column">
@@ -362,18 +364,25 @@
                         </div>
                     </div>`;
                         }
+                        $('#product-list').html(html);
+                        paging($('.product-item'), perHalaman);
                     }
-                    $('#product-list').html(html);
-                    if (!window.pagin) {
-                        window.pagin = new Pagination('#pagination-container', {
-                            itemsCount: res.total_items,
-                            pageSize: perHalaman,
-                            currentPage: halaman,
-                            onPageChange: function(data) {
-                                halaman = data.currentPage;
-                                produk();
-                            }
-                        });
+                }
+            });
+        }
+
+        function paging($selector, $perHalaman) {
+            window.tp = new Pagination('#pagination-container', {
+                itemsCount: $selector.length,
+                pageSize: parseInt($perHalaman),
+                onPageChange: function(paging) {
+                    let start = paging.pageSize * (paging.currentPage - 1);
+                    let end = start + paging.pageSize;
+                    let $rows = $selector;
+
+                    $rows.hide();
+                    for (let i = start; i < end; i++) {
+                        $rows.eq(i).show();
                     }
                 }
             });
