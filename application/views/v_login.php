@@ -92,7 +92,7 @@
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Gagal Login',
+                                title: 'Gagal login',
                                 text: res.message
                             });
                         }

@@ -451,7 +451,7 @@
                                 icon: 'success',
                                 title: 'Berhasil',
                                 text: res.message,
-                                timer: 1500
+                                timer: 1000
                             });
                         }
                     }
@@ -484,7 +484,7 @@
                                         icon: 'success',
                                         title: 'Berhasil',
                                         text: res.message,
-                                        timer: 1500
+                                        timer: 1000
                                     });
                                     $('#btn-list-user').click();
                                 }

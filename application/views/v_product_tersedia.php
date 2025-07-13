@@ -142,13 +142,13 @@
                         </div>`;
                         }
                         $('#product-list').html(html);
-                        initPagination(res.total_items);
+                        hasilPaginasi(res.total_items);
                     }
                 }
             });
         }
 
-        function initPagination(totalItems) {
+        function hasilPaginasi(totalItems) {
             const totalPages = Math.ceil(totalItems / perHalaman);
 
             $('#pagination-container').empty();

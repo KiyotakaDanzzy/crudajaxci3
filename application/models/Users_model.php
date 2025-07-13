@@ -11,7 +11,7 @@ class Users_model extends CI_Model
         $user = $this->db->get_where($this->table, ['username' => $username])->row();
 
         if (!$user) {
-            return ['status' => false, 'message' => 'Username tidak ditemukan'];
+            return ['status' => false, 'message' => 'Username tidak ada dalam data'];
         }
 
         if (!password_verify($password, $user->password)) {
@@ -50,7 +50,7 @@ class Users_model extends CI_Model
 
         return [
             'status' => true,
-            'message' => 'User berhasil ditambahkan'
+            'message' => 'Berhasil menambahkan user'
         ];
     }
 
@@ -61,7 +61,7 @@ class Users_model extends CI_Model
 
         return [
             'status' => true,
-            'message' => 'User berhasil dihapus'
+            'message' => 'Berhasil menghapus user'
         ];
     }
 }
