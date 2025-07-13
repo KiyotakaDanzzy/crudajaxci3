@@ -122,10 +122,34 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold text-primary" href="#"><i class="bi bi-box-seam-fill"></i> CRUD ProdukKu</a>
+
             <div class="d-flex ms-auto" style="width: 100%; max-width: 500px;">
-                <div class="input-group"><span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span><input type="text" id="search-input" class="form-control bg-light border-0" placeholder="Cari nama produk..."></div>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search-input" class="form-control bg-light border-0" placeholder="Cari nama produk...">
+                </div>
             </div>
-            <button class="btn btn-primary ms-3 d-flex align-items-center btn-add"><i class="bi bi-plus-circle-fill me-2"></i><span>Tambah produk</span></button>
+
+            <div class="ms-3 d-flex">
+                <button class="btn btn-primary me-2 d-flex align-items-center btn-add">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    <span>Tambah produk</span>
+                </button>
+
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-people-fill me-2"></i>User
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="#" id="btn-tambah-user"><i class="bi bi-person-plus"></i> Tambah User</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-list-user"><i class="bi bi-people"></i> List User</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="<?= base_url('users/logout') ?>"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -145,22 +169,82 @@
                         <input type="hidden" name="id" value="">
                         <div class="row">
                             <div class="col-md-7">
-                                <div class="mb-3"><label for="name" class="form-label fw-bold">Nama produk</label><input type="text" id="name" name="name" class="form-control">
+                                <div class="mb-3"><label for="name" class="form-label fw-bold">Nama produk:</label><input type="text" id="name" name="name" class="form-control">
                                     <div class="invalid-feedback" id="name-error"></div>
                                 </div>
-                                <div class="mb-3"><label for="price" class="form-label fw-bold">Harga (Rp)</label><input type="number" id="price" name="price" class="form-control">
+                                <div class="mb-3"><label for="price" class="form-label fw-bold">Harga(Rp):</label><input type="number" id="price" name="price" class="form-control">
                                     <div class="invalid-feedback" id="price-error"></div>
                                 </div>
-                                <div class="mb-3"><label for="description" class="form-label fw-bold">Deskripsi</label><textarea id="description" name="description" class="form-control" rows="5"></textarea></div>
+                                <div class="mb-3"><label for="description" class="form-label fw-bold">Deskripsi:</label><textarea id="description" name="description" class="form-control" rows="5"></textarea></div>
                             </div>
                             <div class="col-md-5">
-                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk</label><input type="file" id="image" name="image" class="form-control" onchange="previewGambar()"><img id="preview-gambar" src="#" alt="Image Preview" class="img-fluid d-none"></div>
+                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk:</label><input type="file" id="image" name="image" class="form-control" onchange="previewGambar()"><img id="preview-gambar" src="#" alt="Image Preview" class="img-fluid d-none"></div>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" id="btn-save">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="user-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah User Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="user-form">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="btn-save-user">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="list-user-modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Daftar User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-list">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -181,9 +265,6 @@
         $(document).ready(function() {
             produk();
             $('#btn-save').click(function() {
-                $('.is-invalid').removeClass('is-invalid');
-                $('.invalid-feedback').text('');
-
                 let nama = $('[name="name"]').val().trim();
                 let harga = $('[name="price"]').val().trim();
                 let error = false;
@@ -285,6 +366,8 @@
                     title: 'Yakin?',
                     text: 'Data produk ini akan dihapus',
                     icon: 'warning',
+                    draggable: true,
+                    reverseButtons: true,
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#6c757d',
@@ -305,7 +388,7 @@
                                         icon: 'success',
                                         title: 'Berhasil',
                                         text: 'Data berhasil dihapus',
-                                        timer: 1500,
+                                        timer: 1000,
                                         showConfirmButton: false
                                     });
                                     produk();
@@ -324,6 +407,91 @@
                     };
                     reader.readAsDataURL(this.files[0]);
                 }
+            });
+            $('#btn-tambah-user').click(function() {
+                $('#user-form')[0].reset();
+                $('#user-modal').modal('show');
+            });
+
+            $('#btn-list-user').click(function() {
+                $.ajax({
+                    url: base + "users/list",
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function(res) {
+                        let html = '';
+                        res.forEach(user => {
+                            html += `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.role}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger btn-hapus-user" data-id="${user.id_user}">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>`;
+                        });
+                        $('#user-list').html(html);
+                        $('#list-user-modal').modal('show');
+                    }
+                });
+            });
+
+            $('#btn-save-user').click(function() {
+                $.ajax({
+                    url: base + "users/tambah",
+                    type: "POST",
+                    data: $('#user-form').serialize(),
+                    dataType: "JSON",
+                    success: function(res) {
+                        if (res.status) {
+                            $('#user-modal').modal('hide');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: res.message,
+                                timer: 1500
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(document).on('click', '.btn-hapus-user', function() {
+                let id = $(this).data('id');
+                Swal.fire({
+                    title: 'Yakin?',
+                    text: 'User ini akan dihapus',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: base + "users/hapus",
+                            type: "POST",
+                            data: {
+                                id: id
+                            },
+                            dataType: "JSON",
+                            success: function(res) {
+                                if (res.status) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil',
+                                        text: res.message,
+                                        timer: 1500
+                                    });
+                                    $('#btn-list-user').click();
+                                }
+                            }
+                        });
+                    }
+                });
             });
         });
 

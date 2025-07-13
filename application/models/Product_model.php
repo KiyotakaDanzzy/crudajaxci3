@@ -14,7 +14,7 @@ class Product_model extends CI_Model
         if (!empty($kataKunci)) {
             $this->db->group_start();
             $this->db->like('name', $kataKunci);
-            // $this->db->or_like('description', $kataKunci);
+            $this->db->or_like('description', $kataKunci);
             $this->db->group_end();
         }
         $this->db->order_by('id', 'DESC');
