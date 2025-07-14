@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Produk</title>
+    <title>CRUD ProdukKu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -141,8 +141,8 @@
                         <i class="bi bi-people-fill me-2"></i>User
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                        <li><a class="dropdown-item" href="#" id="btn-tambah-user"><i class="bi bi-person-plus"></i> Tambah User</a></li>
-                        <li><a class="dropdown-item" href="#" id="btn-list-user"><i class="bi bi-people"></i> List User</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-tambah-user"><i class="bi bi-person-plus"></i> Tambah user</a></li>
+                        <li><a class="dropdown-item" href="#" id="btn-list-user"><i class="bi bi-people"></i> List user</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -194,7 +194,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah User Baru</h5>
+                    <h5 class="modal-title">Tambah user</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -202,10 +202,12 @@
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" required>
+                            <div class="invalid-feedback" id="username-error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="invalid-feedback" id="password-error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
@@ -319,6 +321,7 @@
                     }
                 });
             });
+
 
             $('#search-input').on('keyup', function() {
                 kata = $(this).val();
@@ -439,6 +442,25 @@
             });
 
             $('#btn-save-user').click(function() {
+                $('#user-form .is-invalid').removeClass('is-invalid');
+
+                let username = $('#username').val().trim();
+                let password = $('#password').val().trim();
+                let error = false;
+
+                if (username == '') {
+                    $('#username-error').text('Username tidak boleh kosong');
+                    $('[name="username"]').addClass('is-invalid');
+                    error = true;
+                }
+
+                if (password === '') {
+                    $('#password-error').text('Password tidak boleh kosong');
+                    $('[name="password"]').addClass('is-invalid');
+                    error = true;
+                }
+                if (error) return;
+
                 $.ajax({
                     url: base + "users/tambah",
                     type: "POST",
@@ -493,6 +515,13 @@
                     }
                 });
             });
+
+            $('#product-modal, #user-modal').on('hidden.bs.modal', function() {
+                $(this).find('form')[0].reset();
+                $(this).find('.is-invalid').removeClass('is-invalid');
+                $(this).find('.invalid-feedback').text('');
+            });
+
         });
 
         function produk() {
