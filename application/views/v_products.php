@@ -178,7 +178,7 @@
                                 <div class="mb-3"><label for="description" class="form-label fw-bold">Deskripsi:</label><textarea id="description" name="description" class="form-control" rows="5"></textarea></div>
                             </div>
                             <div class="col-md-5">
-                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk:</label><input type="file" id="image" name="image" class="form-control" onchange="previewGambar()"><img id="preview-gambar" src="#" alt="Image Preview" class="img-fluid d-none"></div>
+                                <div class="mb-3"><label for="image" class="form-label fw-bold">Gambar produk:</label><input type="file" id="image" name="image" class="form-control"><img id="preview-gambar" src="#" alt="Image Preview" class="img-fluid d-none"></div>
                             </div>
                         </div>
                     </form>

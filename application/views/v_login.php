@@ -2,177 +2,172 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - CRUD ProdukKu</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-        * {
-            font-family: 'Inter', sans-serif;
-        }
+    :root {
+      --primary: #4e73df;
+      --primary-hover: #2e59d9;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-image: url('<?= base_url('style/bg/background-lgn.jpg') ?>');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
+    * {
+      font-family: 'Inter', sans-serif;
+    }
 
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
-            z-index: 0;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-image: url('<?= base_url('style/bg/background-lgn.jpg') ?>');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
 
-        .login-card {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.07);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2.5rem;
-            max-width: 400px;
-            width: 100%;
-            backdrop-filter: blur(20px);
-            color: white;
-            transition: all 0.3s ease-in-out;
-        }
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 0;
+    }
 
-        .login-card:hover {
-            box-shadow: 0 0 50px rgba(255, 255, 255, 0.15);
-        }
+    .login-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 0.75rem;
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+      padding: 2.5rem;
+      animation: fadeIn 0.5s ease-in-out;
+    }
 
-        .form-label {
-            font-weight: 600;
-        }
+    .login-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
 
-        .form-control {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
+    .form-label {
+      font-weight: 600;
+      color: #343a40;
+    }
 
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
+    .form-control {
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+    }
 
-        .form-control:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #fff;
-            box-shadow: none;
-        }
+    .btn-primary {
+      background-color: var(--primary);
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: 0.3s ease-in-out;
+    }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
 
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #2575fc, #6a11cb);
-        }
+    .btn-outline-secondary {
+      border-radius: 0.5rem;
+    }
 
-        .btn-outline-secondary {
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 12px;
-        }
+    .footer-note {
+      font-size: 0.85rem;
+      color: #888;
+      text-align: center;
+      margin-top: 2rem;
+    }
 
-        .btn-outline-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
 
-        .text-center h3 {
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: white;
-        }
-    </style>
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="login-card">
-        <div class="text-center mb-4">
-            <h3>Selamat Datang</h3>
-            <p class="mb-0" style="font-size: 14px; color: rgba(255,255,255,0.7)">Silakan login terlebih dulu</p>
+  <div class="login-container">
+    <h4 class="login-title">Login</h4>
+    <form id="login-form">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required placeholder="Masukkan username">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="password" name="password" required placeholder="Masukkan password">
+          <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+            <i class="bi bi-eye"></i>
+          </button>
         </div>
-        <form id="login-form">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Masukkan username" required />
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan password" required />
-                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-        </form>
-    </div>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+    </form>
+    <p class="footer-note">&copy; Manajemen Produk</p>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const base = "<?= base_url() ?>";
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const base = "<?= base_url() ?>";
 
-        $(document).ready(function() {
-            $('#togglePassword').click(function() {
-                const password = $('#password');
-                const type = password.attr('type') === 'password' ? 'text' : 'password';
-                password.attr('type', type);
-                $(this).find('i').toggleClass('bi-eye bi-eye-slash');
-            });
+    $(document).ready(function () {
+      $('#togglePassword').click(function () {
+        const password = $('#password');
+        const type = password.attr('type') === 'password' ? 'text' : 'password';
+        password.attr('type', type);
+        $(this).find('i').toggleClass('bi-eye bi-eye-slash');
+      });
 
-            $('#login-form').submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: base + "users/auth",
-                    type: "POST",
-                    data: $(this).serialize(),
-                    dataType: "JSON",
-                    success: function(res) {
-                        if (res.status) {
-                            window.location.href = res.role === 'admin' ?
-                                base + "products" :
-                                base + "products/tampil";
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal login',
-                                draggable: true,
-                                confirmButtonText: 'Coba lagi',
-                                text: res.message
-                            });
-                        }
-                    }
-                });
-            });
+      $('#login-form').submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+          url: base + "users/auth",
+          type: "POST",
+          data: $(this).serialize(),
+          dataType: "JSON",
+          success: function (res) {
+            if (res.status) {
+              window.location.href = res.role === 'admin'
+                ? base + "products"
+                : base + "products/tampil";
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Gagal login',
+                text: res.message
+              });
+            }
+          }
         });
-    </script>
+      });
+    });
+  </script>
 </body>
 
 </html>

@@ -47,6 +47,18 @@ class Product_model extends CI_Model
 
     public function tambah()
     {
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('name', 'Nama Produk', 'required|max_length[100]|is_unique[products.name]');
+        $this->form_validation->set_rules('price', 'Harga', 'required|numeric');
+
+        if ($this->form_validation->run() == FALSE) {
+            return [
+                'status' => false,
+                'errors' => $this->form_validation->error_array()
+            ];
+        }
+
         $data = [
             'name' => $this->input->post('name'),
             'description' => $this->input->post('description'),

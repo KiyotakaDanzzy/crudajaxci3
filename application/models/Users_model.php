@@ -40,6 +40,17 @@ class Users_model extends CI_Model
 
     public function tambah()
     {
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('username', 'Username', 'required|max_length[50]|is_unique[users.username]');
+
+        if ($this->form_validation->run() == FALSE) {
+            return [
+                'status' => false,
+                'errors' => $this->form_validation->error_array()
+            ];
+        }
+
         $data = [
             'username' => $this->input->post('username'),
             'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
